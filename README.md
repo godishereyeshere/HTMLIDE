@@ -68,7 +68,7 @@ Welcome to the **Advanced Code Editor**, a powerful and user-friendly web-based 
 - **HTML5**: Structure of the editor.
 - **CSS3**: Styling and animations.
 - **JavaScript**: Logic and interactivity.
-- **Fonts**: [Vazir](https://github.com/rastikerdar/vazir-font) (for Persian text) and [Roboto Mono](https://fonts.google.com/specimen/Roboto+Mono) (for code).
+- **Fonts**: [Vazir](https://github.com/rastikerdar/vazir-font) (for Persian text)
 
 ---
 
@@ -76,4 +76,4 @@ Welcome to the **Advanced Code Editor**, a powerful and user-friendly web-based 
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/your-username/advanced-code-editor.git
+   git clone https://github.com/godishereyeshere/HTMLIDE
