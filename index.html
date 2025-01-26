@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>IDE پیشرفته</title>
+  <style>
+    :root {
+      --bg-color: #f5f5f5;
+      --text-color: #000;
+      --button-color: #007bff;
+      --button-hover: #0056b3;
+      --font-family: 'Tahoma', sans-serif;
+    }
+
+    body.dark {
+      --bg-color: #121212;
+      --text-color: #fff;
+      --button-color: #444;
+      --button-hover: #222;
+    }
+
+    body {
+      font-family: var(--font-family);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin: 0;
+      padding: 20px;
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      transition: background-color 0.3s, color 0.3s;
+    }
+
+    textarea {
+      width: 100%;
+      height: 150px;
+      margin-bottom: 10px;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-family: monospace;
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      border-color: var(--text-color);
+    }
+
+    iframe {
+      width: 100%;
+      height: 300px;
+      border: 1px solid #ccc;
+      margin-top: 10px;
+      border-radius: 8px;
+      background-color: white;
+    }
+
+    button, select {
+      padding: 10px 20px;
+      margin: 5px;
+      border: none;
+      border-radius: 8px;
+      background-color: var(--button-color);
+      color: white;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    button:hover, select:hover {
+      background-color: var(--button-hover);
+    }
+  </style>
+</head>
+<body>
+  <h1>ویرایشگر کد پیشرفته</h1>
+
+  <!-- انتخاب قالب -->
+  <select id="templateSelector" onchange="loadTemplate()">
+    <option value="" disabled selected>انتخاب قالب</option>
+    <option value="template1">صفحه ساده وبلاگ</option>
+    <option value="template2">کارت محصول</option>
+    <option value="template3">جدول پیشرفته</option>
+    <option value="template4">پنل ادمین</option>
+    <option value="template5">لندینگ پیج مینیمال</option>
+    <option value="template6">دکمه تغییر رنگ متن</option>
+    <option value="template7">اسلایدر تصاویر</option>
+    <option value="template8">فرم تماس</option>
+    <option value="template9">گالری تصاویر</option>
+    <option value="template10">نوار پیشرفت پویا</option>
+  </select>
+
+  <!-- فیلدهای کد -->
+  <textarea id="htmlCode" placeholder="کد HTML خود را اینجا بنویسید..."></textarea>
+  <textarea id="cssCode" placeholder="کد CSS خود را اینجا بنویسید..."></textarea>
+  <textarea id="jsCode" placeholder="کد JavaScript خود را اینجا بنویسید..."></textarea>
+
+  <!-- دکمه‌ها -->
+  <button onclick="runCode()">اجرای کد</button>
+  <button onclick="clearCode()">پاک کردن</button>
+  <button onclick="toggleTheme()">تغییر حالت تاریک/روشن</button>
+
+  <!-- خروجی -->
+  <iframe id="output"></iframe>
+
+  <script>
+    // قالب‌های آماده
+    const templates = {
+      template1: {
+        html: "<h1>به وبلاگ من خوش آمدید!</h1>",
+        css: "body { font-family: Tahoma; text-align: center; }",
+        js: "console.log('وبلاگ بارگذاری شد!');"
+      },
+      template2: {
+        html: `
+          <div class='product-card'>
+            <img src='https://via.placeholder.com/150' alt='محصول'>
+            <h2>نام محصول</h2>
+            <p>توضیحات محصول...</p>
+            <button>خرید</button>
+          </div>`,
+        css: `
+          .product-card {
+            border: 1px solid #ccc;
+            padding: 20px;
+            text-align: center;
+            border-radius: 10px;
+          }
+          .product-card img {
+            width: 100%;
+            height: auto;
+            border-radius: 10px;
+          }`,
+        js: ""
+      },
+      template3: {
+        html: `
+          <table>
+            <thead>
+              <tr><th>ستون ۱</th><th>ستون ۲</th><th>ستون ۳</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>داده ۱</td><td>داده ۲</td><td>داده ۳</td></tr>
+              <tr><td>داده ۴</td><td>داده ۵</td><td>داده ۶</td></tr>
+            </tbody>
+          </table>`,
+        css: `
+          table {
+            width: 100%;
+            border-collapse: collapse;
+          }
+          th, td {
+            border: 1px solid #ccc;
+            padding: 10px;
+            text-align: center;
+          }`,
+        js: ""
+      },
+      template4: {
+        html: "<h2>پنل مدیریت</h2>",
+        css: "h2 { color: #007bff; text-align: center; }",
+        js: ""
+      },
+      template5: {
+        html: "<h1>لندینگ پیج زیبا</h1>",
+        css: "body { font-family: Tahoma; text-align: center; padding: 50px; }",
+        js: ""
+      },
+      template6: {
+        html: `
+          <button id='colorBtn'>روی من کلیک کن</button>
+          <p id='colorText'>این متن رنگش عوض می‌شود</p>`,
+        css: `
+          #colorText {
+            color: black;
+            font-size: 18px;
+          }
+          #colorBtn {
+            margin-top: 10px;
+          }`,
+        js: `
+          document.getElementById('colorBtn').addEventListener('click', () => {
+            const text = document.getElementById('colorText');
+            text.style.color = text.style.color === 'red' ? 'black' : 'red';
+          });`
+      },
+      template7: {
+        html: `
+          <div class='slider'>
+            <img id='sliderImage' src='https://via.placeholder.com/300' alt='اسلایدر'>
+            <button id='nextImage'>بعدی</button>
+          </div>`,
+        css: `
+          .slider {
+            text-align: center;
+          }
+          .slider img {
+            width: 300px;
+            height: auto;
+          }
+          .slider button {
+            margin-top: 10px;
+          }`,
+        js: `
+          const images = [
+            'https://via.placeholder.com/300',
+            'https://via.placeholder.com/300/ff0000',
+            'https://via.placeholder.com/300/00ff00'
+          ];
+          let currentIndex = 0;
+          document.getElementById('nextImage').addEventListener('click', () => {
+            currentIndex = (currentIndex + 1) % images.length;
+            document.getElementById('sliderImage').src = images[currentIndex];
+          });`
+      },
+      template8: {
+        html: `
+          <form>
+            <label>نام: <input type='text'></label>
+            <label>ایمیل: <input type='email'></label>
+            <button type='submit'>ارسال</button>
+          </form>`,
+        css: "form { display: flex; flex-direction: column; gap: 10px; }",
+        js: ""
+      },
+      template9: {
+        html: `
+          <div class='gallery'>
+            <img src='https://via.placeholder.com/100' alt='تصویر ۱'>
+            <img src='https://via.placeholder.com/100/ff0000' alt='تصویر ۲'>
+            <img src='https://via.placeholder.com/100/00ff00' alt='تصویر ۳'>
+          </div>`,
+        css: `
+          .gallery {
+            display: flex;
+            gap: 10px;
+          }
+          .gallery img {
+            border-radius: 5px;
+          }`,
+        js: ""
+      },
+      template10: {
+        html: `
+          <div>
+            <progress id='progressBar' value='0' max='100'></progress>
+            <button id='startProgress'>شروع</button>
+          </div>`,
+        css: "progress { width: 100%; }",
+        js: `
+          document.getElementById('startProgress').addEventListener('click', () => {
+            const progressBar = document.getElementById('progressBar');
+            let value = 0;
+            const interval = setInterval(() => {
+              if (value >= 100) {
+                clearInterval(interval);
+              } else {
+                value += 10;
+                progressBar.value = value;
+              }
+            }, 500);
+          });`
+      }
+    };
+
+    // بارگذاری قالب
+    function loadTemplate() {
+      const selectedTemplate = document.getElementById("templateSelector").value;
+      if (templates[selectedTemplate]) {
+        document.getElementById("htmlCode").value = templates[selectedTemplate].html;
+        document.getElementById("cssCode").value = templates[selectedTemplate].css;
+        document.getElementById("jsCode").value = templates[selectedTemplate].js;
+      }
+    }
+
+    // اجرای کد
+    function runCode() {
+      const htmlCode = document.getElementById('htmlCode').value;
+      const cssCode = document.getElementById('cssCode').value;
+      const jsCode = document.getElementById('jsCode').value;
+
+      const output = document.getElementById('output');
+      const source = `
+        <html>
+          <head>
+            <style>${cssCode}</style>
+          </head>
+          <body>
+            ${htmlCode}
+            <script>${jsCode}<\/script>
+          </body>
+        </html>
+      `;
+      output.srcdoc = source;
+    }
+
+    // پاک کردن کدها
+    function clearCode() {
+      document.getElementById('htmlCode').value = '';
+      document.getElementById('cssCode').value = '';
+      document.getElementById('jsCode').value = '';
+      document.getElementById('output').srcdoc = '';
+    }
+
+    // تغییر حالت تاریک/روشن
+    function toggleTheme() {
+      document.body.classList.toggle('dark');
+    }
+  </script>
+</body>
+</html>
